@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Coding Homework Generator</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; margin: 20px; }
+        input { width: 60%; padding: 10px; margin: 10px 0; }
+        button { padding: 10px 20px; cursor: pointer; }
+        pre { background: #f4f4f4; padding: 15px; text-align: left; border-radius: 5px; }
+        .error { color: red; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h1>Generate Python Coding Homework from YouTube</h1>
+    
+    <form id="homework-form">
+        <label for="youtube_url">Enter YouTube Video Link:</label><br>
+        <input type="text" id="youtube_url" name="youtube_url" placeholder="https://www.youtube.com/watch?v=..." required>
+        <br>
+        <button type="submit">Generate Homework</button>
+    </form>
+
+    <h2>Generated Homework:</h2>
+    <pre id="output">Waiting for input...</pre>
+
+    <script>
+        $(document).ready(function() {
+            $('#homework-form').submit(function(event) {
+                event.preventDefault();
+                let youtubeUrl = $('#youtube_url').val();
+                
+                $('#output').text("Generating homework... Please wait.");
+
+                $.post('/generate_homework', { youtube_url: youtubeUrl }, function(data) {
+                    if (data.code.includes("Error")) {
+                        $('#output').html(`<span class="error">${data.code}</span>`);
+                    } else {
+                        $('#output').text(data.code);
+                    }
+                }).fail(function() {
+                    $('#output').html('<span class="error">Error: Failed to fetch data.</span>');
+                });
+            });
+        });
+    </script>
+</body>
+</html>

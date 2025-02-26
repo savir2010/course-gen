@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gemini LLM Homework Generator</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <h1>Python Homework Generator</h1>
+    <form id="homework-form">
+        <label for="topic">Enter Topic:</label>
+        <input type="text" id="topic" name="topic" required>
+        <button type="submit">Generate</button>
+    </form>
+    
+    <h2>Output:</h2>
+    <div id="output"></div>
+
+    <script>
+        $(document).ready(function() {
+            $('#homework-form').submit(function(event) {
+                event.preventDefault();
+                let topic = $('#topic').val();
+                
+                $.post('/generate', { topic: topic }, function(data) {
+                    let response = data.response;
+                    let outputDiv = $('#output');
+
+                    if (response.includes("Failed to display")) {
+                        outputDiv.html("<h2 style='color: red;'>Error 404</h2>");
+                    } else if (response.includes("youtube.com/watch?v=")) {
+                        console.log(response);
+                        // Extract the video ID correctly
+                        let videoIdMatch = response.match(/v=([a-zA-Z0-9_-]+)/);
+                        if (videoIdMatch) {
+                            let videoId = videoIdMatch[1];
+                            let embedUrl = `https://www.youtube.com/embed/${videoId}`;
+                            outputDiv.html(`<iframe width="560" height="315" src="${embedUrl}" frameborder="0" allowfullscreen></iframe>`);
+                        } else {
+                            outputDiv.text("Invalid YouTube link format.");
+                        }
+                    } else {
+                        outputDiv.text(response);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

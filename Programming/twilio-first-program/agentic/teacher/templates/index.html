@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Quiz Generator</title>
+</head>
+<body>
+    <h1>YouTube Quiz Generator</h1>
+    <form id="quizForm">
+        <label for="videoUrl">YouTube Video URL:</label>
+        <input type="text" id="videoUrl" name="videoUrl" required>
+        <button type="submit">Generate Quiz</button>
+    </form>
+    <h2>Generated Quiz:</h2>
+    <form id="quizQuestions"></form>
+    <button id="submitAnswers" style="display:none;">Submit Answers</button>
+    <h2 id="result"></h2>
+    
+    <script>
+        let correctAnswers = {};  // Store correct answers
+
+        document.getElementById("quizForm").addEventListener("submit", async function(event) {
+            event.preventDefault();
+            const videoUrl = document.getElementById("videoUrl").value;
+            const response = await fetch("/generate_quiz", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ video_url: videoUrl })
+            });
+            const data = await response.json();
+            
+            const quizQuestions = document.getElementById("quizQuestions");
+            quizQuestions.innerHTML = "";
+            correctAnswers = {};  // Reset answers
+
+            if (data.quiz && Array.isArray(data.quiz)) {
+                data.quiz.forEach((item, index) => {
+                    if (!item.question || !item.choices || item.choices.length < 2) return; // Ensure valid question data
+
+                    const questionDiv = document.createElement("div");
+                    questionDiv.innerHTML = `<p><strong>${item.question}</strong></p>`;
+                    
+                    item.choices.forEach(choice => {
+                        const label = document.createElement("label");
+                        const input = document.createElement("input");
+                        input.type = "radio";
+                        input.name = `question${index}`;
+                        input.value = choice;
+                        label.appendChild(input);
+                        label.appendChild(document.createTextNode(` ${choice}`));
+                        questionDiv.appendChild(label);
+                        questionDiv.appendChild(document.createElement("br"));
+                    });
+
+                    correctAnswers[`question${index}`] = item.correct;
+                    quizQuestions.appendChild(questionDiv);
+                });
+                document.getElementById("submitAnswers").style.display = "block";
+            } else {
+                quizQuestions.innerHTML = "<p>Error generating quiz.</p>";
+            }
+        });
+
+        document.getElementById("submitAnswers").addEventListener("click", function() {
+            let correctCount = 0;
+            const totalQuestions = Object.keys(correctAnswers).length;
+            
+            Object.keys(correctAnswers).forEach((key) => {
+                const inputs = document.querySelectorAll(`input[name="${key}"]`);
+                let selectedIndex = -1;
+
+                inputs.forEach((input, idx) => {
+                    if (input.checked) {
+                        selectedIndex = idx + 1; // Get the index of the selected answer
+                    }
+                });
+
+                console.log(correctAnswers[key]); // Correct answer index
+                console.log(selectedIndex); // Selected answer index
+
+                if (selectedIndex === correctAnswers[key]) {
+                    correctCount++;
+                }
+            });
+
+
+            document.getElementById("result").textContent = `You got ${correctCount} out of ${totalQuestions} correct!`;
+        });
+    </script>
+</body>
+</html>
