@@ -5,7 +5,7 @@ import youtube_transcript_api
 app = Flask(__name__)
 
 # Configure Gemini API
-genai.configure(api_key="AIzaSyDCTs2KxcKqRxDony-OPOeJs0tR34MOuoc")
+genai.configure(api_key="GEMINI API KEY")
 
 def get_transcript(youtube_url):
     """Extract transcript from YouTube video."""
