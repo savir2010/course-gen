@@ -7,7 +7,7 @@ import re
 app = Flask(__name__)
 
 # Set up Google Gemini API
-genai.configure(api_key="AIzaSyDCTs2KxcKqRxDony-OPOeJs0tR34MOuoc")
+genai.configure(api_key="GEMINI API KEY")
 
 def get_video_id(url):
     match = re.search(r"(?:v=|youtu.be/)([\w-]+)", url)
