@@ -1,3 +1,7 @@
+import utils.clients
+import utils.http_session
+import utils.transport
+import utils.session
 from flask import Flask, render_template, request, jsonify
 import google.generativeai as genai
 import requests
@@ -9,8 +13,8 @@ import yt_dlp
 app = Flask(__name__)
 
 # Configure Gemini API
-genai.configure(api_key="AIzaSyDCTs2KxcKqRxDony-OPOeJs0tR34MOuoc")
-SERPAPI_KEY = "ec7af2935cb905bbdbad818fc9319bfc93dc142806a0ece9708c03d6610cfb83"
+genai.configure(api_key="GEMINI API KEY")
+SERPAPI_KEY = "SERP API KEY"
 
 def get_video_duration_yt_dlp(youtube_url):
     """Fetches the duration of a YouTube video using yt-dlp."""
